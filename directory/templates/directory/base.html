@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% load directory_utils %}
+
+{% block content %}
+    {% block filter_form %}
+        <div class="filter-container">
+            <form method="get">
+                {{ filter.form.as_p }}
+                <input class="btn btn-filter-submit" type="submit">
+            </form>
+        </div>
+    {% endblock %}
+
+
+    <table class="table filter-results">
+    {% if display_headings %}
+        <tr>
+            {% for heading in field_headings %}
+                <th>{{ heading }}</th>
+            {% endfor %}
+        </tr>
+    {% endif %}
+    {% for object in object_list %}
+    <tr>
+        {% for field_name in field_names %}
+            <td>
+                {% if link_on_field == field_name %}
+                    <a href="{{ object.get_absolute_url }}">{{ object|getattr:field_name }}</a>
+                {% else %}
+                    {{ object|getattr:field_name }}
+                {% endif %}
+            </td>
+        {% endfor %}
+    </tr>
+    {% empty %}
+    <tr>
+        <td><p>No items.</p></td>
+    </tr>
+    {% endfor %}
+    </table>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="{% url 'entertainers:list' %}?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+                <span class="page-current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="{% url 'entertainers:list' %}?page={{ page_obj.next_page_number }}">next</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+{% endblock %}
