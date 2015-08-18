@@ -23,8 +23,6 @@ def getattr(obj, args):
         attr = obj.__getattribute__(attribute)
     except AttributeError:
         attr = obj.__dict__.get(attribute, default)
-    except:
-        attr = default
 
     if hasattr(attr, '__call__'):
         return attr.__call__()
