@@ -95,6 +95,24 @@ class RatingSearchView(DirectoryView):
 
 We would end up with two fields, one labeled 'Minimum rating' and the other labeled 'Maximum Rating'.
 
+Setting Field Objects
+---------------------
+
+You can also specify field objects in the search fields, to do this we replace the lookups with a tuple of lookup name
+and field object. To acieve the same as above we could do:
+
+```
+class RatingSearchView(DirectoryView):
+    class Meta:
+        search_fields = OrderedDict(
+            ('rating', [
+                ('gte', forms.IntegerField(label=_('Minimum rating')))
+                ('lte', forms.IntegerField(label=_('Maximum rating')))
+            ]),
+        )
+        form_class = RatingSearchForm
+```
+
 Template
 ========
 
