@@ -72,7 +72,7 @@ The following values are set in the template context in addition to the usual va
 
 **filter:** The filter object, use `filter.form` to access the search form.
 
-*filter
+*filter_query_string:** The query string supplied by the filter.
 
 **link_on_field:** The name of the field to add the link to.
 
