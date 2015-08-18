@@ -8,7 +8,7 @@ setup(
     name='django-directory',
     version='0.0.1',
     packages=['directory', 'directory.templatetags'],
-    url='',
+    url='https://github.com/wildfish/django-directory',
     license='MIT',
     author='dan',
     author_email='dan@wildfish.com',
