@@ -1,3 +1,4 @@
+from copy import copy
 from django.core.exceptions import ImproperlyConfigured
 from django.views.generic import ListView
 import six as six
@@ -95,6 +96,12 @@ class BaseDirectoryView(ListView):
 
         kwargs.setdefault('display_headings', self._meta.display_headings)
         kwargs.setdefault('link_on_field', self._meta.link_on_field)
+
+        qs = copy(self.request.GET)
+        if 'page' in qs:
+            del qs['page']
+
+        kwargs.setdefault('filter_query_string', qs.urlencode())
 
         return super(BaseDirectoryView, self).get_context_data(**kwargs)
 
