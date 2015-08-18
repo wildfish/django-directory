@@ -13,7 +13,7 @@ class DirectoryOptions(object):
         self.basic_filter_class = getattr(options, 'filter_class', None)
         self.basic_search_fields = getattr(options, 'search_fields', None)
         self.display_headings = getattr(options, 'display_headings', True)
-        self.form_class = getattr(options, 'form_class', forms.Form)
+        self.form_class = getattr(options, 'form_class', None)
 
         if self.basic_filter_class:
             self.model = self.basic_filter_class.Meta.model

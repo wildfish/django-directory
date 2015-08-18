@@ -1,7 +1,8 @@
+from collections import OrderedDict
 from django import forms
 from django.test import TestCase
 from directory.views import DirectoryView
-from .models import TestModel
+from .models import TestModel, MultipleFieldModel
 
 
 class DirectoryViewGetFilterClass(TestCase):
@@ -72,3 +73,62 @@ class DirectoryViewGetFilterClass(TestCase):
         filter_class = v.get_filter_class()
 
         self.assertEqual(forms.Form, filter_class.Meta.form)
+
+    def test_search_fields_are_specified_with_a_field___the_resulting_form_has_the_correct_field_objects_after_construction(self):
+        second_field = forms.IntegerField(label='Second Field')
+        min_field = forms.IntegerField(label='Min')
+        max_field = forms.IntegerField(label='Max')
+
+        class TestDirectoryView(DirectoryView):
+            class Meta:
+                model = MultipleFieldModel
+                search_fields = OrderedDict((
+                    ('first', ['exact']),
+                    ('second', [
+                        ('exact', second_field)
+                    ]),
+                    ('third', [
+                        ('gte', min_field),
+                        ('lte', max_field),
+                    ])
+                ))
+
+        v = TestDirectoryView()
+
+        filter_class = v.get_filter_class()
+        form = filter_class.Meta.form()
+
+        self.assertEqual(second_field, form.fields['second__exact'])
+        self.assertEqual(min_field, form.fields['third__gte'])
+        self.assertEqual(max_field, form.fields['third__lte'])
+
+    def test_search_fields_are_specified_with_a_field___the_resulting_filter_has_the_correct_fields_set(self):
+        second_field = forms.IntegerField(label='Second Field')
+        min_field = forms.IntegerField(label='Min')
+        max_field = forms.IntegerField(label='Max')
+
+        class TestDirectoryView(DirectoryView):
+            class Meta:
+                model = MultipleFieldModel
+                search_fields = OrderedDict((
+                    ('first', ['exact']),
+                    ('second', [
+                        ('exact', second_field)
+                    ]),
+                    ('third', [
+                        ('gte', min_field),
+                        ('lte', max_field),
+                    ])
+                ))
+
+        v = TestDirectoryView()
+
+        filter_class = v.get_filter_class()
+
+        expected_fields = OrderedDict((
+            ('first', ['exact']),
+            ('second', ['exact']),
+            ('third', ['gte', 'lte']),
+        ))
+
+        self.assertEqual(expected_fields, filter_class.Meta.fields)
