@@ -1,4 +1,4 @@
 six
 django
 django-filter
-
+coverage
