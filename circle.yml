@@ -3,4 +3,4 @@ machine:
     version: 3.4.3
 test:
   override:
-    - ./runtests.py
+    - ./runcircle.sh
