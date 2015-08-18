@@ -1,4 +1,5 @@
 from copy import copy
+from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.views.generic import ListView
 import six as six
@@ -12,6 +13,7 @@ class DirectoryOptions(object):
         self.basic_filter_class = getattr(options, 'filter_class', None)
         self.basic_search_fields = getattr(options, 'search_fields', None)
         self.display_headings = getattr(options, 'display_headings', True)
+        self.form_class = getattr(options, 'form_class', forms.Form)
 
         if self.basic_filter_class:
             self.model = self.basic_filter_class.Meta.model
@@ -48,7 +50,8 @@ class DirectoryViewMetaclass(type):
         if not new_class._meta.basic_filter_class:
             new_class._meta.basic_filter_class = generate_model_filter_class(
                 new_class._meta.model,
-                new_class._meta.basic_search_fields
+                new_class._meta.basic_search_fields,
+                new_class._meta.form_class
             )
 
         return new_class
