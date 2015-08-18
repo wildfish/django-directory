@@ -45,7 +45,7 @@ class DirectoryViewGetContextData(TestCase):
 
         context_data = v.get_context_data()
 
-        self.assertEqual(('id', 'field_b'), context_data['field_names'])
+        self.assertEqual(('field_b', 'id'), context_data['field_names'])
 
     def test_field_names_are_supplied_in_kwargs___field_names_are_not_changed(self):
         class TestDirectoryView(DirectoryView):
@@ -73,7 +73,7 @@ class DirectoryViewGetContextData(TestCase):
 
         context_data = v.get_context_data()
 
-        self.assertEqual(('Id', 'Field B'), context_data['field_headings'])
+        self.assertEqual(('Field B', 'Id'), context_data['field_headings'])
 
     def test_field_headings_are_supplied_in_kwargs___field_names_are_not_changed(self):
         class TestDirectoryView(DirectoryView):

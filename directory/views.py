@@ -26,7 +26,7 @@ class DirectoryOptions(object):
 
         self.display_fields = []
         if self.model:
-            for f in getattr(options, 'display_fields', self.model._meta.get_all_field_names()):
+            for f in getattr(options, 'display_fields', sorted(self.model._meta.get_all_field_names())):
                 if isinstance(f, six.string_types):
                     field_name = f
                     verbose_name = self.model._meta.get_field(f).verbose_name.title()
