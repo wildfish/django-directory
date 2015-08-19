@@ -33,11 +33,12 @@ def getattr(obj, args):
 @register.filter
 def get_selectable_pages(page, pages_before_after):
     # if we have few enough pages that we wouldn't have any breaks when we select the middle page give the full range
-    if page.paginator.num_pages <= (3 + 2 * pages_before_after):
+    # we also allow for the break occuring on the 2nd or penultimate pages
+    if page.paginator.num_pages <= (5 + 2 * pages_before_after):
         return page.paginator.page_range
 
     # if the pages in the limit include the second pages starting at 1 otherwise have 1 and a break
-    if page.number - pages_before_after <= 2:
+    if page.number - pages_before_after <= 3:
         pages = [i for i in range(1, page.number)]
     else:
         pages = [1, None, ] + [i for i in range(page.number - pages_before_after, page.number)]
@@ -47,7 +48,7 @@ def get_selectable_pages(page, pages_before_after):
 
     # if the pages in the limit include the penultimate pages starting up to the final page are returned
     # otherwise have a break and then the final page
-    if page.number + pages_before_after >= page.paginator.num_pages - 1:
+    if page.number + pages_before_after >= page.paginator.num_pages - 2:
         pages += [i for i in range(page.number + 1, page.paginator.num_pages + 1)]
     else:
         pages += [i for i in range(page.number + 1, page.number + pages_before_after + 1)] + [None, page.paginator.num_pages]

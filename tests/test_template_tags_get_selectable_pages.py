@@ -15,29 +15,29 @@ class FakePage(object):
 
 class TemplateTagsGetSelectablePages(TestCase):
     def test_there_are_less_pages_in_the_paginator_than_are_allowed_in_the_limit___all_pages_are_returned(self):
-        page = FakePage(1, 5)
+        page = FakePage(1, 7)
 
         selectable_pages = get_selectable_pages(page, 1)
 
-        self.assertEqual([1, 2, 3, 4, 5], selectable_pages)
+        self.assertEqual([1, 2, 3, 4, 5, 6, 7], selectable_pages)
 
     def test_there_are_more_pages_in_the_paginator_than_are_allowed_in_the_limit_and_we_are_near_the_start___pages_up_to_the_limit_are_returned_with_break_before_final_page(self):
-        page = FakePage(3, 6)
+        page = FakePage(4, 8)
 
         selectable_pages = get_selectable_pages(page, 1)
 
-        self.assertEqual([1, 2, 3, 4, None, 6], selectable_pages)
+        self.assertEqual([1, 2, 3, 4, 5, None, 8], selectable_pages)
 
     def test_there_are_more_pages_in_the_paginator_than_are_allowed_in_the_limit_and_we_are_near_the_end___first_page_then_a_break_then_pages_in_the_limit_to_the_end_are_returned(self):
-        page = FakePage(4, 6)
+        page = FakePage(5, 8)
 
         selectable_pages = get_selectable_pages(page, 1)
 
-        self.assertEqual([1, None, 3, 4, 5, 6], selectable_pages)
+        self.assertEqual([1, None, 4, 5, 6, 7, 8], selectable_pages)
 
     def test_there_are_more_pages_in_the_paginator_than_are_allowed_in_the_limit_and_we_are_in_the_middle___first_page_then_a_break_followed_byt_the_pages_in_the_limit_then_a_break_and_final_are_returned(self):
-        page = FakePage(4, 7)
+        page = FakePage(5, 9)
 
         selectable_pages = get_selectable_pages(page, 1)
 
-        self.assertEqual([1, None, 3, 4, 5, None, 7], selectable_pages)
+        self.assertEqual([1, None, 4, 5, 6, None, 9], selectable_pages)
