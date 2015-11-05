@@ -20,9 +20,6 @@ class DirectoryOptions(object):
         else:
             self.model = getattr(options, 'model', None)
 
-        if not self.basic_filter_class and not self.basic_search_fields and not self.abstract:
-            raise ImproperlyConfigured('Neither Meta.search_fields nor Meta.filter_class were set')
-
         if not self.basic_filter_class and not self.model and not self.abstract:
             raise ImproperlyConfigured('Neither Meta.filter_class nor Meta.model were set')
 
@@ -47,13 +44,6 @@ class DirectoryViewMetaclass(type):
 
         new_class._meta = DirectoryOptions(new_class.Meta)
 
-        if not new_class._meta.basic_filter_class:
-            new_class._meta.basic_filter_class = generate_model_filter_class(
-                new_class._meta.model,
-                new_class._meta.basic_search_fields,
-                new_class._meta.form_class
-            )
-
         return new_class
 
 
@@ -68,7 +58,7 @@ class BaseDirectoryView(ListView):
         if self._meta.abstract:
             raise ImproperlyConfigured('You cannot create and instance of an abstract DirectoryView')
 
-        if not self.unfiltered_queryset:
+        if self.unfiltered_queryset is None:
             self.unfiltered_queryset = self.get_filter_class().Meta.model._default_manager.all()
 
         self._filter = None
@@ -76,6 +66,12 @@ class BaseDirectoryView(ListView):
         super(BaseDirectoryView, self).__init__(*args, **kwargs)
 
     def get_filter_class(self):
+        if not self._meta.basic_filter_class:
+            self._meta.basic_filter_class = generate_model_filter_class(
+                self._meta.model,
+                self.get_search_fields(),
+                self.get_form_class()
+            )
         return self._meta.basic_filter_class
 
     def get_filter(self):
@@ -83,6 +79,9 @@ class BaseDirectoryView(ListView):
             self._filter = self.get_filter_class()(data=self.request.GET, queryset=self.get_unfiltered_queryset())
 
         return self._filter
+
+    def get_form_class(self):
+        return self._meta.form_class
 
     def get_unfiltered_queryset(self):
         return self.unfiltered_queryset
@@ -110,6 +109,12 @@ class BaseDirectoryView(ListView):
 
     def get_display_fields(self):
         return self._meta.display_fields
+
+    def get_search_fields(self):
+        if not self._meta.basic_search_fields:
+            raise ImproperlyConfigured('Neither Meta.search_fields nor Meta.filter_class were set')
+
+        return self._meta.basic_search_fields
 
 
 class DirectoryView(six.with_metaclass(DirectoryViewMetaclass, BaseDirectoryView)):

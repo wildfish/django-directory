@@ -1,11 +1,36 @@
 from collections import OrderedDict
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 from django.test import TestCase
 from directory.views import DirectoryView
 from .models import TestModel, MultipleFieldModel
 
 
 class DirectoryViewGetFilterClass(TestCase):
+    def test_no_filter_class_or_search_fields_are_present_and_access_functions_not_overridden___improperly_configured_error_is_raised(self):
+        class TestDirectoryView(DirectoryView):
+            unfiltered_queryset = TestModel.objects.all()
+
+            class Meta:
+                model = TestModel
+
+        self.assertRaisesRegex(ImproperlyConfigured, 'Neither Meta.search_fields nor Meta.filter_class were set', TestDirectoryView().get_filter_class)
+
+    def test_no_filter_class_or_search_fields_are_present_and_get_search_fields_overridden___overridden_fields_are_used_fo_build_the_filter(self):
+        class TestDirectoryView(DirectoryView):
+            class Meta:
+                model = TestModel
+
+            def get_search_fields(self):
+                return ['field_a']
+
+        v = TestDirectoryView()
+
+        filter_class = v.get_filter_class()
+
+        self.assertEqual(TestModel, filter_class.Meta.model)
+        self.assertEqual(['field_a'], filter_class.Meta.fields)
+
     def test_filter_class_is_set_but_search_fields_are_not___result_is_filter_class(self):
         class FilterClass(object):
             class Meta:
