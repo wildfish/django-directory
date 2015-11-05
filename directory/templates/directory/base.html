@@ -27,9 +27,9 @@
                 <td>
                     <div class='directory-cell-content'>
                     {% if link_on_field == field_name %}
-                        <a href="{{ object.get_absolute_url }}">{{ object|render:field_name }}</a>
+                        <a href="{{ object.get_absolute_url }}">{% render object field_name %}</a>
                     {% else %}
-                        {{ object|render:field_name }}
+                        {% render object field_name %}
                     {% endif %}
                     </div>
                 </td>

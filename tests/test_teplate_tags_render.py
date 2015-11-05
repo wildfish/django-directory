@@ -1,13 +1,20 @@
+from django.views.generic import View
+
 from directory.templatetags import directory_utils as tags
 from unittest import TestCase
 
 
 class TemplateTagsrender(TestCase):
+    def setUp(self):
+        self.context = {
+            'view': View()
+        }
+
     def test_object_does_not_have_the_attribute_no_default_is_set___empty_string_is_returned(self):
         class A(object):
             foo = 'bar'
 
-        res = tags.render(A(), 'bar')
+        res = tags.render(self.context, A(), 'bar')
 
         self.assertEqual('', res)
 
@@ -15,7 +22,7 @@ class TemplateTagsrender(TestCase):
         class A(object):
             foo = 'bar'
 
-        res = tags.render(A(), 'bar,boo')
+        res = tags.render(self.context, A(), 'bar,boo')
 
         self.assertEqual('boo', res)
 
@@ -23,7 +30,7 @@ class TemplateTagsrender(TestCase):
         class A(object):
             foo = 'bar'
 
-        res = tags.render(A(), 'foo,boo')
+        res = tags.render(self.context, A(), 'foo,boo')
 
         self.assertEqual('bar', res)
 
@@ -32,23 +39,16 @@ class TemplateTagsrender(TestCase):
             def foo(self):
                 return 'bar'
 
-        res = tags.render(A(), 'foo,boo')
-
-        self.assertEqual('bar', res)
-
-    def test_object_has_the_render_attribute___attribute_value_is_returned(self):
-        class A(object):
-            render_foo = 'bar'
-
-        res = tags.render(A(), 'foo,boo')
+        res = tags.render(self.context, A(), 'foo,boo')
 
         self.assertEqual('bar', res)
 
     def test_object_has_the_render_attribute_which_is_callable___attribute_return_value_is_returned(self):
-        class A(object):
-            def render_foo(self):
-                return 'bar'
+        self.context['view'].render_foo = lambda x: 'bar'
 
-        res = tags.render(A(), 'foo,boo')
+        class A(object):
+            pass
+
+        res = tags.render(self.context, A(), 'foo,boo')
 
         self.assertEqual('bar', res)

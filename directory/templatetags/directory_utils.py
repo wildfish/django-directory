@@ -3,11 +3,11 @@ from django import template
 register = template.Library()
 
 
-@register.filter
-def render(obj, args):
+@register.simple_tag(takes_context=True)
+def render(context, obj, args):
     """
-    Try to render an attribute from an object. It will first look for a function called 'render_<attr_name>',
-    If this doesnt exist it will look for an attribute with the attribute name, if this doesnt exist it will
+    Try to render an attribute from an object. It will first look for a function called 'render_<attr_name>' on the
+    view, If this doesnt exist it will look for an attribute with the attribute name, if this doesnt exist it will
     fallback to the default value supplied or None if no default was supplied
     """
     splitargs = args.split(',')
@@ -17,15 +17,17 @@ def render(obj, args):
         attribute, default = args, ''
 
     try:
-        attr = obj.__getattribute__('render_' + attribute)
+        attr = context['view'].__getattribute__('render_' + attribute)
     except AttributeError:
-        attr = obj.__dict__.get(attribute, None)
+        attr = context['view'].__dict__.get(attribute, None)
 
-        if not attr:
-            try:
-                attr = obj.__getattribute__(attribute)
-            except AttributeError:
-                attr = obj.__dict__.get(attribute, default)
+    if attr:
+        return attr(obj)
+
+    try:
+        attr = obj.__getattribute__(attribute)
+    except AttributeError:
+        attr = obj.__dict__.get(attribute, default)
 
     if hasattr(attr, '__call__'):
         return attr.__call__()
