@@ -64,7 +64,7 @@ class BaseDirectoryView(ListView):
 
     def get_filter_class(self):
         if not self._meta.basic_filter_class:
-            self._meta.basic_filter_class = generate_model_filter_class(
+            return generate_model_filter_class(
                 self._meta.model,
                 self.get_search_fields(),
                 self.get_form_class()
