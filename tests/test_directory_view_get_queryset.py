@@ -21,6 +21,9 @@ class DirectoryViewGetQueryset(TestCase):
             class Meta:
                 filter_class = FilterClass
 
+            def get_unfiltered_queryset(self):
+                return 'unfiltered qs'
+
         request = RequestFactory().get('/?field_a=1')
         v = TestDirectoryView()
         v.request = request

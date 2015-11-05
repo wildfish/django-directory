@@ -58,9 +58,6 @@ class BaseDirectoryView(ListView):
         if self._meta.abstract:
             raise ImproperlyConfigured('You cannot create and instance of an abstract DirectoryView')
 
-        if self.unfiltered_queryset is None:
-            self.unfiltered_queryset = self.get_filter_class().Meta.model._default_manager.all()
-
         self._filter = None
 
         super(BaseDirectoryView, self).__init__(*args, **kwargs)
@@ -84,6 +81,9 @@ class BaseDirectoryView(ListView):
         return self._meta.form_class
 
     def get_unfiltered_queryset(self):
+        if self.unfiltered_queryset is None:
+            return self._meta.model._default_manager.all()
+
         return self.unfiltered_queryset
 
     def get_queryset(self):
