@@ -70,7 +70,7 @@ class BaseDirectoryView(ListView):
             self._meta.basic_filter_class = generate_model_filter_class(
                 self._meta.model,
                 self.get_search_fields(),
-                self._meta.form_class
+                self.get_form_class()
             )
         return self._meta.basic_filter_class
 
@@ -79,6 +79,9 @@ class BaseDirectoryView(ListView):
             self._filter = self.get_filter_class()(data=self.request.GET, queryset=self.get_unfiltered_queryset())
 
         return self._filter
+
+    def get_form_class(self):
+        return self._meta.form_class
 
     def get_unfiltered_queryset(self):
         return self.unfiltered_queryset
