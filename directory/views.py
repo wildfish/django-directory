@@ -20,9 +20,6 @@ class DirectoryOptions(object):
         else:
             self.model = getattr(options, 'model', None)
 
-        if not self.basic_filter_class and not self.basic_search_fields and not self.abstract:
-            raise ImproperlyConfigured('Neither Meta.search_fields nor Meta.filter_class were set')
-
         if not self.basic_filter_class and not self.model and not self.abstract:
             raise ImproperlyConfigured('Neither Meta.filter_class nor Meta.model were set')
 
@@ -110,6 +107,12 @@ class BaseDirectoryView(ListView):
 
     def get_display_fields(self):
         return self._meta.display_fields
+
+    def get_search_fields(self):
+        if not self._meta.basic_search_fields:
+            raise ImproperlyConfigured('Neither Meta.search_fields nor Meta.filter_class were set')
+
+        return self._meta.basic_search_fields
 
 
 class DirectoryView(six.with_metaclass(DirectoryViewMetaclass, BaseDirectoryView)):
