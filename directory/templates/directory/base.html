@@ -49,7 +49,7 @@
                 <ul class="pagination">
                     {% if page_obj.has_previous %}
                         <li>
-                            <a href="{% url 'entertainers:list' %}?page={{ page_obj.previous_page_number }}&{{ filter_query_string }}">&#171;</a>
+                            <a href="{{ request.path }}?page={{ page_obj.previous_page_number }}&{{ filter_query_string }}">&#171;</a>
                         </li>
                     {% else %}
                         <li class="disabled">
@@ -62,14 +62,14 @@
                             {% if not label %}
                                 <span class="break"></span>
                             {% else %}
-                                <a href="{% url 'entertainers:list' %}?page={{ label }}&{{ filter_query_string }}">{{ label }}</a>
+                                <a href="{{ request.path }}?page={{ label }}&{{ filter_query_string }}">{{ label }}</a>
                             {% endif %}
                         </li>
                     {% endfor %}
 
                     {% if page_obj.has_next %}
                         <li>
-                            <a href="{% url 'entertainers:list' %}?page={{ page_obj.next_page_number }}&{{ filter_query_string }}">&#187;</a>
+                            <a href="{{ request.path }}?page={{ page_obj.next_page_number }}&{{ filter_query_string }}">&#187;</a>
                         </li>
                     {% else %}
                         <li class="disabled">
