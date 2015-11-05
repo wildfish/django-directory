@@ -4,14 +4,11 @@ register = template.Library()
 
 
 @register.filter
-def getattr(obj, args):
-    """ Try to get an attribute from an object.
-
-    Example: {% if block|getattr:"editable,True" %}
-
-    Beware that the default is always a string, if you want this
-    to return False, pass an empty second argument:
-    {% if block|getattr:"editable," %}
+def render(obj, args):
+    """
+    Try to render an attribute from an object. It will first look for a function called 'render_<attr_name>',
+    If this doesnt exist it will look for an attribute with the attribute name, if this doesnt exist it will
+    fallback to the default value supplied or None if no default was supplied
     """
     splitargs = args.split(',')
     try:
@@ -20,9 +17,15 @@ def getattr(obj, args):
         attribute, default = args, ''
 
     try:
-        attr = obj.__getattribute__(attribute)
+        attr = obj.__getattribute__('render_' + attribute)
     except AttributeError:
-        attr = obj.__dict__.get(attribute, default)
+        attr = obj.__dict__.get(attribute, None)
+
+        if not attr:
+            try:
+                attr = obj.__getattribute__(attribute)
+            except AttributeError:
+                attr = obj.__dict__.get(attribute, default)
 
     if hasattr(attr, '__call__'):
         return attr.__call__()
