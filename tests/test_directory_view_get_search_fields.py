@@ -6,8 +6,10 @@ from .models import TestModel
 
 
 class DirectoryViewGetSearchFields(TestCase):
-    def test_search_fields_are_not_specified___improperly_configured_error_is_raised_when_the_directory_view_is_created(self):
+    def test_search_fields_are_not_specified___improperly_configured_error_is_raised(self):
         class TestDirectoryView(DirectoryView):
+            unfiltered_queryset = TestModel.objects.all()
+            
             class Meta:
                 model = TestModel
 

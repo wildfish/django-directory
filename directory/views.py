@@ -44,13 +44,6 @@ class DirectoryViewMetaclass(type):
 
         new_class._meta = DirectoryOptions(new_class.Meta)
 
-        if not new_class._meta.basic_filter_class:
-            new_class._meta.basic_filter_class = generate_model_filter_class(
-                new_class._meta.model,
-                new_class._meta.basic_search_fields,
-                new_class._meta.form_class
-            )
-
         return new_class
 
 
@@ -65,7 +58,7 @@ class BaseDirectoryView(ListView):
         if self._meta.abstract:
             raise ImproperlyConfigured('You cannot create and instance of an abstract DirectoryView')
 
-        if not self.unfiltered_queryset:
+        if self.unfiltered_queryset is None:
             self.unfiltered_queryset = self.get_filter_class().Meta.model._default_manager.all()
 
         self._filter = None
@@ -73,6 +66,12 @@ class BaseDirectoryView(ListView):
         super(BaseDirectoryView, self).__init__(*args, **kwargs)
 
     def get_filter_class(self):
+        if not self._meta.basic_filter_class:
+            self._meta.basic_filter_class = generate_model_filter_class(
+                self._meta.model,
+                self.get_search_fields(),
+                self._meta.form_class
+            )
         return self._meta.basic_filter_class
 
     def get_filter(self):
